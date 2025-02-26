@@ -60,13 +60,23 @@ public class HomeController implements Initializable {
         // Event-Handler für Sortierung (JETZT an der richtigen Stelle!)
         sortBtn.setOnAction(actionEvent -> {
             if (sortBtn.getText().equals("Sort (asc)")) {
-                observableMovies.sort((m1, m2) -> m1.getTitle().compareToIgnoreCase(m2.getTitle()));
+                sortMovies(true);
                 sortBtn.setText("Sort (desc)");
             } else {
-                observableMovies.sort((m1, m2) -> m2.getTitle().compareToIgnoreCase(m1.getTitle()));
+                sortMovies(false);
                 sortBtn.setText("Sort (asc)");
             }
         });
+    }
+
+    //Methode zur Sortierung aufsteigend true oder absteigend false
+    public void sortMovies(boolean ascending){
+        if(ascending){
+            allMovies.sort((m1, m2) -> m1.getTitle().compareToIgnoreCase(m2.getTitle()));
+        }else{
+            allMovies.sort((m1, m2) -> m2.getTitle().compareToIgnoreCase(m1.getTitle()));
+        }
+
     }
 
     private void applyFilters() {
