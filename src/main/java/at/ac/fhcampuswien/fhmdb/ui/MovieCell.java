@@ -55,5 +55,14 @@ public class MovieCell extends ListCell<Movie> {
             setGraphic(layout);
         }
     }
+    public Label getTitle() {
+        return title;
+    }
+    public Label getDetail() {
+        return detail;
+    }
+    public Label getGenre() {
+        return genre;
+    }
 }
 

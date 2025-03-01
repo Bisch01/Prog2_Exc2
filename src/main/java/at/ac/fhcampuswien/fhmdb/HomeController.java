@@ -79,7 +79,7 @@ public class HomeController implements Initializable {
 
     }
 
-    private void applyFilters() {
+    protected void applyFilters() {
         String selectedGenre = genreComboBox.getValue();
         String searchText = (searchField.getText() != null) ? searchField.getText().toLowerCase().trim() : "";
 
@@ -100,5 +100,6 @@ public class HomeController implements Initializable {
                 .collect(Collectors.toList());
 
         observableMovies.setAll(filteredMovies);
+        movieListView.setItems(observableMovies); // updated die JFX-Liste damit die gefilterte Liste die aktuelle ist
     }
 }
