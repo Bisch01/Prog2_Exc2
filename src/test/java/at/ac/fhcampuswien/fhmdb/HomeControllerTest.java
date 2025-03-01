@@ -60,6 +60,24 @@ class HomeControllerTest {
     }
 
     @Test
+    void movies_sorted_descending_alphabetic(){                 // Sortierung absteigender Reihenfolge
+        homeController.sortMovies(false);
+        assertEquals("Zodiac", homeController.allMovies.get(0).getTitle());
+        assertEquals("Inception", homeController.allMovies.get(1).getTitle());
+        assertEquals("Avatar", homeController.allMovies.get(2).getTitle());
+    }
+
+
+    @Test
+    void filter_no_results_found(){                             // Wenn es keine passenden Filme gibt, bleibt die Liste leer
+        homeController.searchField.setText("xyz");
+        homeController.genreComboBox.setValue("Horror");
+        homeController.applyFilters();
+
+        assertTrue(homeController.movieListView.getItems().isEmpty());
+    }
+
+    @Test
     void does_applyFilters_filterGenreCorrectly(){
         homeController.genreComboBox.setValue("Science_Fiction");
         homeController.applyFilters();
