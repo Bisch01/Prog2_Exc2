@@ -59,9 +59,13 @@ class HomeControllerTest {
         assertEquals("Zodiac", homeController.allMovies.get(2).getTitle());
     }
 
+
     @Test
-    void movies_sorted_descending_alphabetic(){                 // Sortierung absteigender Reihenfolge
-        homeController.sortMovies(false);
+    void movies_sorted_descending_alphabetic() { // Test für absteigende Sortierung
+
+        homeController.sortMovies(false); // Sortiere absteigend
+
+        // Überprüfung korrekte Reihenfolge (Z -> A)
         assertEquals("Zodiac", homeController.allMovies.get(0).getTitle());
         assertEquals("Inception", homeController.allMovies.get(1).getTitle());
         assertEquals("Avatar", homeController.allMovies.get(2).getTitle());
@@ -77,6 +81,8 @@ class HomeControllerTest {
         assertTrue(homeController.movieListView.getItems().isEmpty());
     }
 
+
+
     @Test
     void does_applyFilters_filterGenreCorrectly(){
         homeController.genreComboBox.setValue("Science_Fiction");
@@ -87,4 +93,43 @@ class HomeControllerTest {
         assertEquals(expectedCount, filteredMovies.size());
     }
 
+    @Test
+    //Wenn kein Filter gesetzt ist, sollten alle Filme bleiben
+    void applyFilters_without_filters_should_show_all_movies() {
+        homeController.applyFilters(); // Keine Filter gesetzt
+
+        assertEquals(homeController.allMovies.size(), homeController.movieListView.getItems().size());
+    }
+
+    @Test
+    void applyFilters_with_search_text_should_show_only_matching_movie() {
+        //Wenn nach Text gefiltert wird, soll nur gesuchter Film gezeigt werden
+        homeController.searchField.setText("Inception");
+        homeController.applyFilters();
+
+        assertEquals(1, homeController.movieListView.getItems().size());
+    }
+
+    @Test
+    void applyFilters_with_non_matching_search_text_should_show_no_movies() {
+        //Test ob Liste leer bleibt, wenn man nach nicht vorhandenem Text sucht
+        homeController.searchField.setText("NichtVorhanden");
+        homeController.applyFilters();
+
+        assertEquals(0, homeController.movieListView.getItems().size()); // Kein Film gefunden
+    }
+
+    @Test
+    void sortMovies_twice_should_not_change_order() {
+        //Test ob Sortierung gleich bleibt, wenn man 2 mal soertieren drückt
+        homeController.sortMovies(true); // 1. Mal sortieren
+        List<String> firstSort = homeController.allMovies.stream().map(Movie::getTitle).toList();
+
+        homeController.sortMovies(true); // 2. Mal sortieren
+        List<String> secondSort = homeController.allMovies.stream().map(Movie::getTitle).toList();
+
+        assertEquals(firstSort, secondSort); // Reihenfolge bleibt gleich
+    }
+
 }
+
