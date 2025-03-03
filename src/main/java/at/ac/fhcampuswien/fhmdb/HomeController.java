@@ -79,7 +79,6 @@ public class HomeController implements Initializable {
         observableMovies.setAll(allMovies);
     }
 
-
     public void applyFilters() {
         String selectedGenre = genreComboBox.getValue();
         String searchText = (searchField.getText() != null) ? searchField.getText().toLowerCase().trim() : "";
