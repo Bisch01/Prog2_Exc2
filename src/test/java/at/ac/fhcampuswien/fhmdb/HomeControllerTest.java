@@ -109,6 +109,14 @@ class HomeControllerTest {
 
         assertEquals(1, homeController.movieListView.getItems().size());
     }
+    @Test
+    void applyFilters_with_search_text_should_show_given_Movie() {
+        //Wenn nach Text gefiltert wird, soll nur gesuchter Film gezeigt werden
+        homeController.searchField.setText("Avatar");
+        homeController.applyFilters();
+
+        assertEquals(1, homeController.movieListView.getItems().size());
+    }
 
     @Test
     void applyFilters_with_non_matching_search_text_should_show_no_movies() {
