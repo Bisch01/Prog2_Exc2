@@ -1,5 +1,6 @@
 package at.ac.fhcampuswien.fhmdb;
 
+import at.ac.fhcampuswien.fhmdb.models.MovieAPI;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -21,5 +22,15 @@ public class FhmdbApplication extends Application {
 
     public static void main(String[] args) {
         launch();
+
+        //Führt API-Anfrage durch und gibt Ergebnis in Konsole aus
+        try {
+            MovieAPI movie = new MovieAPI();  // Instanz erstellen
+            String response = movie.run("https://prog2.fh-campuswien.ac.at/swagger-ui/index.html");
+            System.out.println(response);
+        } catch (IOException e) {
+            System.err.println("Fehler beim Abrufen der API-Daten: " + e.getMessage());
+        }
     }
-}
+
+    }
