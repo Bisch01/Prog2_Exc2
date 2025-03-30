@@ -27,11 +27,15 @@
          <Label styleClass="text-white" stylesheets="@styles.css" text="Welcome to FHMDb!" />
       </children>
    </HBox>
+
+   <!-- Such- und Filterleiste -->
    <HBox spacing="5.0" styleClass="background-black" stylesheets="@styles.css">
       <children>
          <JFXButton fx:id="sortBtn" styleClass="background-yellow" stylesheets="@styles.css" text="Sort (asc)" />
-         <TextField fx:id="searchField" prefHeight="25.0" prefWidth="170.0" promptText="Search FHMDb" />
+         <TextField fx:id="searchField" prefHeight="25.0" prefWidth="150.0" promptText="Search FHMDb" />
          <JFXComboBox fx:id="genreComboBox" focusColor="#f5c518" styleClass="filter-combo-box" stylesheets="@styles.css" />
+         <TextField fx:id="releaseYearInput" prefHeight="25.0" prefWidth="100.0" promptText="Year" />
+         <TextField fx:id="ratingFromInput" prefHeight="25.0" prefWidth="100.0" promptText="Rating from" />
          <JFXButton fx:id="searchBtn" styleClass="background-yellow" stylesheets="@styles.css" text="Filter" />
       </children>
       <VBox.margin>
@@ -41,5 +45,6 @@
          <Insets bottom="20.0" left="10.0" top="20.0" />
       </padding>
    </HBox>
+
    <JFXListView fx:id="movieListView" styleClass="background-black" style="-fx-background-color: black;" stylesheets="@styles.css" VBox.vgrow="ALWAYS" />
 </VBox>

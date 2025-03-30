@@ -34,10 +34,25 @@ class HomeControllerTest {
         homeController.movieListView = new JFXListView<>();
         homeController.searchBtn = new JFXButton();
         homeController.sortBtn = new JFXButton();
+
+
+        //Liste mit Testdaten befüllen
         homeController.allMovies = new ArrayList<>();
-        homeController.allMovies.add(new Movie("Zodiac", "Thriller über einen Serienmörder.", List.of("Crime", "Drama")));
-        homeController.allMovies.add(new Movie("Inception", "Ein Traum im Traum.", List.of("Sci-Fi", "Thriller")));
-        homeController.allMovies.add(new Movie("Avatar", "Blauer Planet und Naturverbundenheit.", List.of("Sci-Fi", "Adventure")));
+
+        homeController.allMovies.add(new Movie("Zodiac", "Thriller über einen Serienmörder.",
+                List.of("Crime", "Drama"), "id1",
+                List.of("Jake Gyllenhaal", "Mark Ruffalo"), List.of("David Fincher"), 2007, 7.7
+        ));
+
+        homeController.allMovies.add(new Movie("Inception", "Ein Traum im Traum.",
+                List.of("Sci-Fi", "Thriller"), "id2",
+                List.of("Leonardo DiCaprio"), List.of("Christopher Nolan"), 2010, 8.8));
+
+        homeController.allMovies.add(new Movie("Avatar", "Blauer Planet und Naturverbundenheit.",
+                List.of("Sci-Fi", "Adventure"), "id3",
+                List.of("Sam Worthington"), List.of("James Cameron"), 2009, 7.8));
+
+
         homeController.movieListView.setItems(FXCollections.observableArrayList(homeController.allMovies));
         homeController.initialize(null,null);
     }
