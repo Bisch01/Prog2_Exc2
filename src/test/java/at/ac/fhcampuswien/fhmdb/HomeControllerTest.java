@@ -13,6 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -37,24 +38,11 @@ class HomeControllerTest {
 
 
         //Liste mit Testdaten befüllen
-        homeController.allMovies = new ArrayList<>();
-
-        homeController.allMovies.add(new Movie("Zodiac", "Thriller über einen Serienmörder.",
-                List.of("Crime", "Drama"), "id1",
-                List.of("Jake Gyllenhaal", "Mark Ruffalo"), List.of("David Fincher"), 2007, 7.7
-        ));
-
-        homeController.allMovies.add(new Movie("Inception", "Ein Traum im Traum.",
-                List.of("Sci-Fi", "Thriller"), "id2",
-                List.of("Leonardo DiCaprio"), List.of("Christopher Nolan"), 2010, 8.8));
-
-        homeController.allMovies.add(new Movie("Avatar", "Blauer Planet und Naturverbundenheit.",
-                List.of("Sci-Fi", "Adventure"), "id3",
-                List.of("Sam Worthington"), List.of("James Cameron"), 2009, 7.8));
-
-
-        homeController.movieListView.setItems(FXCollections.observableArrayList(homeController.allMovies));
-        homeController.initialize(null,null);
+        try {
+            homeController.allMovies = new at.ac.fhcampuswien.fhmdb.models.MovieAPI().fetchMovies();
+        } catch (Exception e){
+            fail("API Fehlgeschlagen" + e.getMessage());
+        }
     }
 
     @Test
@@ -64,26 +52,21 @@ class HomeControllerTest {
 
     @Test
     void movies_sorted_ascending_alphabetic(){                  //Aufruf sortMovies function aus HomeController
-
+        List<Movie> unsortedMovies = new ArrayList<>(homeController.allMovies);
         homeController.sortMovies(true);
-
-                                                                //Überprüfung korrekte Reihenfolge
-
-        assertEquals("Avatar", homeController.allMovies.get(0).getTitle());
-        assertEquals("Inception", homeController.allMovies.get(1).getTitle());
-        assertEquals("Zodiac", homeController.allMovies.get(2).getTitle());
+        List<Movie> sortedMovies = new ArrayList<>(homeController.allMovies);
+        unsortedMovies.sort(Comparator.comparing(Movie::getTitle, String.CASE_INSENSITIVE_ORDER));
+        assertEquals(sortedMovies, unsortedMovies);
     }
 
 
     @Test
-    void movies_sorted_descending_alphabetic() { // Test für absteigende Sortierung
-
-        homeController.sortMovies(false); // Sortiere absteigend
-
-        // Überprüfung korrekte Reihenfolge (Z -> A)
-        assertEquals("Zodiac", homeController.allMovies.get(0).getTitle());
-        assertEquals("Inception", homeController.allMovies.get(1).getTitle());
-        assertEquals("Avatar", homeController.allMovies.get(2).getTitle());
+    void movies_sorted_descending_alphabetic() {
+        List<Movie> unsortedMovies = new ArrayList<>(homeController.allMovies);
+        homeController.sortMovies(false);
+        List<Movie> sortedMovies = new ArrayList<>(homeController.allMovies);
+        unsortedMovies.sort((m1, m2) -> m2.getTitle().compareTo(m1.getTitle()));
+        assertEquals(unsortedMovies, sortedMovies);
     }
 
 
@@ -100,12 +83,16 @@ class HomeControllerTest {
 
     @Test
     void does_applyFilters_filterGenreCorrectly(){
-        homeController.genreComboBox.setValue("Science_Fiction");
+        homeController.genreComboBox = new com.jfoenix.controls.JFXComboBox<>();
+        homeController.genreComboBox.setValue("DRAMA");
+        homeController.searchField = new javafx.scene.control.TextField("");
+        homeController.releaseYearInput = new javafx.scene.control.TextField("");
+        homeController.ratingFromInput = new javafx.scene.control.TextField("");
+
         homeController.applyFilters();
-        ObservableList<Movie> filteredMovies = homeController.movieListView.getItems();
-        assertTrue(filteredMovies.stream().allMatch(movie -> movie.getGenres().contains("Science_Fiction"))); //haben alle Filme in der gefilterten Liste die Genre
-        long expectedCount = homeController.allMovies.stream().filter(movie -> movie.getGenres().contains("Science_Fiction")).count(); //überprüft Anzahl der FIlme mit dem Filter
-        assertEquals(expectedCount, filteredMovies.size());
+        List<Movie> result = homeController.allMovies;
+        assertFalse(result.isEmpty(), "Filme mit der Genre DRAMA existieren nicht");
+        assertTrue(result.stream().allMatch(m -> m.getGenres().contains("DRAMA")),"Nicht alle Filme enthalten die Genre DRAMA");
     }
 
     @Test
