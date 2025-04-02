@@ -16,6 +16,7 @@ import java.util.List;
 
 public class MovieAPI {
 
+    public static final String URL = "https://prog2.fh-campuswien.ac.at/movies";
     // Initialisierung OkHttp Client
     private final OkHttpClient client = new OkHttpClient();
     // Initialisierung Gson
@@ -23,12 +24,34 @@ public class MovieAPI {
 
     // Methode run bekommt eine URL übergeben
     // Sendet HTTP-GET Anfrage an URL
-    public List<Movie> fetchMovies() throws IOException {
+    public List<Movie> fetchMoviesWithParams(String query, String genre,String releaseYear, String ratingFrom) throws IOException{ // Hauptmethode um die URL aufzubauen
+        HttpUrl.Builder urlBuilder = HttpUrl.parse(URL).newBuilder();
+        addQueryParam(urlBuilder, query);
+        addGenreParam(urlBuilder,genre);
+        addReleaseYearParam(urlBuilder, releaseYear);
+        addRatingFromParam(urlBuilder, ratingFrom);
 
-        String url = "https://prog2.fh-campuswien.ac.at/movies";
+        String url = urlBuilder.build().toString();
 
         Request request = new Request.Builder()
                 .url(url)
+                .addHeader("User-Agent","http.agent")
+                .build();
+        try (Response response = client.newCall(request).execute()) {
+            if(!response.isSuccessful()){
+                throw new IOException("API-Aufruf Fehler: " + response);
+            }
+            String json = response.body().string();
+            Type movieListType = new TypeToken<List<Movie>>() {}.getType();
+            return gson.fromJson(json, movieListType);
+        }
+
+    }
+
+    public List<Movie> fetchMovies() throws IOException {
+
+        Request request = new Request.Builder()
+                .url(URL)
                 .addHeader("User-Agent", "http.agent")
                 .build();
 
@@ -42,53 +65,25 @@ public class MovieAPI {
             return gson.fromJson(json, movieListType);
         }
     }
-
-    public List<Movie> fetchMoviesWithParams(String query, String genre, String releaseYear, String ratingFrom) throws IOException{
-        // Baue URL mit optionalen Parametern für query und genre
-        HttpUrl.Builder urlBuilder = HttpUrl.parse("https://prog2.fh-campuswien.ac.at/movies").newBuilder();
-
-        // Wenn ein Suchtext vorhanden ist, als Parameter anhängen (Freitextsuche)
-        if (query != null && !query.isBlank()) {
-            urlBuilder.addQueryParameter("query", query);
+    // Hilfsmethode für die Hauptmethode damit man diese leichter testen kann
+    private void addQueryParam(HttpUrl.Builder urlBuilder, String query) {
+        if(query != null && !query.isBlank()){
+            urlBuilder.addQueryParameter("query",query);
         }
-
-        // Wenn ein Genre gewählt wurde (außer "Alle Genres"), Parameter anhängen
-        if (genre != null && !genre.equals("Alle Genres")) {
-            urlBuilder.addQueryParameter("genre", genre.toUpperCase()); // API erwartet Großbuchstaben
+    }
+    private void addGenreParam(HttpUrl.Builder urlBuilder, String genre) {
+        if(genre != null && !genre.equalsIgnoreCase("Alle Genres")){
+            urlBuilder.addQueryParameter("genre",genre);
         }
-
-        // Füge Erscheinungsjahr als Filter hinzu, falls angegeben
-        if (releaseYear != null && !releaseYear.isBlank()) {
-            urlBuilder.addQueryParameter("releaseYear", releaseYear);
+    }
+    private void addReleaseYearParam(HttpUrl.Builder urlBuilder, String releaseYear) {
+        if(releaseYear != null && !releaseYear.isBlank()){
+            urlBuilder.addQueryParameter("releaseYear",releaseYear);
         }
-
-        //Füge Bewertung als Filter hinzu
-        if (ratingFrom != null && !ratingFrom.isBlank()) {
-            urlBuilder.addQueryParameter("ratingFrom", ratingFrom);
-        }
-
-
-        // Baue vollständige URL aus dem Builder
-        String url = urlBuilder.build().toString();
-
-        // Erstelle den HTTP-Request mit User-Agent Header (Pflicht für die API!)
-        Request request = new Request.Builder()
-                .url(url)
-                .addHeader("User-Agent", "http.agent")
-                .build();
-
-        // Führe den HTTP-Request aus und verarbeite die Antwort
-        try (Response response = client.newCall(request).execute()) {
-            if (!response.isSuccessful()) {
-                throw new IOException("Fehler beim API-Aufruf: " + response);
-            }
-
-            // Lese den JSON-String aus dem Response-Body
-            String json = response.body().string();
-
-            // Verwende Gson, um JSON in eine Liste von Movie-Objekten zu parsen
-            Type movieListType = new TypeToken<List<Movie>>() {}.getType();
-            return gson.fromJson(json, movieListType);
+    }
+    private void addRatingFromParam(HttpUrl.Builder urlBuilder, String ratingFrom) {
+        if(ratingFrom != null && !ratingFrom.isBlank()){
+            urlBuilder.addQueryParameter("ratingFrom",ratingFrom);
         }
     }
 }
